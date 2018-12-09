@@ -1,4 +1,3 @@
-const TelegramBot = require("node-telegram-bot-api");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) {
   throw new Error("[backupX] [TELEGRAM]:Bot Token is required");
@@ -8,8 +7,9 @@ const password = process.env.TELEGRAM_BOT_ON_DEMAND_BACKUP_PIN;
 if (!password) {
   throw new Error("[backupX] [TELEGRAM]: bot password  is required");
 }
-const subscribedChannelIDs = process.env.TELEGRAM_BOT_SUBSCRIBED_CHANNEL_IDS.split(',');
-
+const subscribedChannelIDs = process.env.TELEGRAM_BOT_SUBSCRIBED_CHANNEL_IDS.split(
+  ","
+);
 
 if (!subscribedChannelIDs || !subscribedChannelIDs.length) {
   throw new Error(
@@ -18,12 +18,8 @@ if (!subscribedChannelIDs || !subscribedChannelIDs.length) {
 }
 
 const core = require("../core");
-
+const TelegramBot = require("node-telegram-bot-api");
 const bot = new TelegramBot(token, { polling: true });
-
-// bot.sendDocument('-1001482710851', '.temp/test-project-sun-dec-09-2018-13:17:10.gzip');
-
-console.log("[backupX] [TELEGRAM]:: bot loaded waiting command ");
 
 bot.onText(/\/backup (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
@@ -53,8 +49,6 @@ const telegramTransporter = {
         console.log("Invalid channel:", channelId);
         continue;
       }
-      console.log('CHAT iD:',chat.id)
-      console.log('backupFileName:',backupFileName)
       bot.sendDocument(chat.id, backupFileName);
     }
     console.log("[backup-x] [TELEGRAM] [CRON]:: complete.");
