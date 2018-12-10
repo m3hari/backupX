@@ -4,15 +4,12 @@ function deleteFile(fileName) {
   execSync(`rm -f ${fileName}`);
 }
 
+function buildFileName(dbName = "Backup", timestamp = new Date()) {
+  const day = timestamp.toString().substr(0,3);
+  const time = timestamp.toISOString().substr(0, 19).replace(/:/g, "-");
+  return `${dbName}_${day}_${time}.gzip`.toLowerCase();
+}
 
-function buildFileName(project = "Backup-", timestamp) {
-  const date = timestamp
-    .toString()
-    .substr(0, 15)
-    .replace(/ /g, "-");
-  const time = timestamp.toTimeString().substr(0, 8);
-  return `${project}-${date}-${time}.gzip`.toLowerCase();
-};
 module.exports = {
     deleteFile,
     buildFileName

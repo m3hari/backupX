@@ -14,12 +14,12 @@ function getPluginById(name) {
   throw new Error("Unsupported transporter");
 }
 
-function transport(data, transporter = "telegram") {
+async function transport(data, transporter = "telegram") {
   if (!isSupportedTransporter(transporter)) {
     throw new Error("Unsupported transporter.");
   }
   const plugin = getPluginById(transporter);
-  plugin.send(data);
+  await plugin.send(data);
 
 }
 

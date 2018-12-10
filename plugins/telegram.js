@@ -7,16 +7,16 @@ const password = process.env.TELEGRAM_BOT_ON_DEMAND_BACKUP_PIN;
 if (!password) {
   throw new Error("[backupX] [TELEGRAM]: bot password  is required");
 }
-const subscribedChannelIDs = process.env.TELEGRAM_BOT_SUBSCRIBED_CHANNEL_IDS.split(
-  ","
-);
+const subscribedChannelIDs =
+  process.env.TELEGRAM_BOT_SUBSCRIBED_CHANNEL_IDS &&
+  process.env.TELEGRAM_BOT_SUBSCRIBED_CHANNEL_IDS.split(",");
 
 if (!subscribedChannelIDs || !subscribedChannelIDs.length) {
   throw new Error(
     "[backupX] [TELEGRAM]: white listed  channels list is required"
   );
 }
-
+const { deleteFile } = require("../helper");
 const core = require("../core");
 const TelegramBot = require("node-telegram-bot-api");
 const bot = new TelegramBot(token, { polling: true });
@@ -30,6 +30,8 @@ bot.onText(/\/backup (.+)/, async (msg, match) => {
     try {
       await bot.sendDocument(chatId, backupFileName);
       console.log("[backupX]  [TELEGRAM]:: Sent.");
+      //clean up
+      deleteFile(backupFileName);
     } catch (err) {
       console.log(err);
     }
@@ -49,7 +51,7 @@ const telegramTransporter = {
         console.log("Invalid channel:", channelId);
         continue;
       }
-      bot.sendDocument(chat.id, backupFileName);
+      await bot.sendDocument(chat.id, backupFileName);
     }
     console.log("[backup-x] [TELEGRAM] [CRON]:: complete.");
   }
